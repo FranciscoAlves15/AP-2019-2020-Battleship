@@ -1,13 +1,19 @@
-import controllers
+import controllers as cc
 
 def main():
+    game = cc.new_game()
     while True:
         line = input()
         if not line:
             exit(0)
         commands = line.split(" ")
         if commands[0] == "RJ":
-            pass
+            name = commands[1]
+            if cc.has_player(game, name):
+                print("Jogador existente.")
+            else:
+                cc.add_player(game, name)
+                print("Jogador registado com sucesso")
         elif commands[0] == "EJ":
             pass
         elif commands[0] == "LJ":
