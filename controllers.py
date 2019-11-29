@@ -1,15 +1,14 @@
 def new_game():
-    return {
-        'players': [],
-        'current': None
-    }
+    return { }
 
 def has_player(game, name):
-    return name in [player['name'] for player in game['players']]
+    pass
 
 def add_player(game, name):
-    game['players'].append({
-        'name': name,
-        'wins': 0,
-        'losses': 0
-    })
+    pass
+
+def has_current_game(game):
+    pass
+
+def player_in_current_game(game, name):
+    pass

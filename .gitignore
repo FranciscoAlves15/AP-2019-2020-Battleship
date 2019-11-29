@@ -26,3 +26,6 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+.vscode/settings.json
+.vscode/.ropeproject/objectdb
+.vscode/.ropeproject/config.py
