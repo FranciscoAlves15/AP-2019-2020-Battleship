@@ -6,31 +6,58 @@ def new_game():
     }
 
 def has_player(game, name):
-    pass
+    for player in game['players']:
+        if player['name'] == name:
+            return True
+    return False
 
 def add_player(game, name):
-    pass
-
-def has_current_match(game):
-    pass
+    game['players'].append({
+        'name': name,
+        'matches': 0,
+        'wins': 0
+    })
 
 def player_in_current_match(game, name):
-    pass
+    if game['match']['first']['player']['name'] == name:
+        return True
+    else:
+        return game['match']['second']['player']['name'] == name
 
 def remove_player(game, name):
-    pass
+    for i in range(game['players']):
+        if game['players'][i]['name'] == name:
+            del game['players'][i]
+            break
+
+def get_player(game, name):
+    for player in game['players']:
+        if player['name'] == name:
+            return player
 
 def has_players(game):
-    pass
+    return len(game['players']) != 0
 
 def get_players(game):
-    pass
+    return game['players']
 
 def has_match(game):
-    pass
+    return game['match'] is not None
 
-def start_match(game, player_1_name, player_2_name):
-    pass
+def start_match(game, player_1_name, player_2_name)
+    # TODO: Keep track of the placed ships.
+    game['match'] = {
+        'first': {
+            'player': get_player(game, player_1_name),
+            'ships': [[0 for _ in range(10)] for _ in range(10)],
+            'shots': [[0 for _ in range(10)] for _ in range(10)]
+        },
+        'second': {
+            'player': get_player(game, player_2_name),
+            'ships': [[0 for _ in range(10)] for _ in range(10)],
+            'shots': [[0 for _ in range(10)] for _ in range(10)]
+        } 
+    }
 
 def all_ships_placed(game):
     pass

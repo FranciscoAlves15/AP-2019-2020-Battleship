@@ -55,7 +55,7 @@ def commandLJ(commands, game):
         print("Não existem jogadores registados.")
     else:
         for player in bg.get_players(game):
-            print(f"{player['name']} {player['games_played']} {player['wins']}")
+            print(f"{player['name']} {player['matches']} {player['wins']}")
 
 def commandIL(commands, game):
     player_1_name = commands[1]
