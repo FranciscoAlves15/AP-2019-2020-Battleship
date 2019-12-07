@@ -148,7 +148,7 @@ def commandV(commands, game):
     elif bg.has_combat(game):
         print("Jogo em curso sem combate iniciado.")
     else:
-        result = bg.get_current_match_state(game)
+        result = bg.get_match_state(game)
         for e in result:
             print(f"{e['name']} {e['total_shots']} {e['shots_on_ships']} {e['sunk_ships']}")
 
