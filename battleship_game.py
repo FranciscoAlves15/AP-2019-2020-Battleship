@@ -66,8 +66,29 @@ def start_match(game, player_1_name, player_2_name):
         'second': __create_match_player(game, player_2_name)
     }
 
-def all_ships_placed(game):
+def place_ship(game, player_name, ship_type, line, column, orientation):
+    match_player = __get_match_player(game, player_name)
+    ship = {
+        'name': ship_type,
+        'is_alive': True
+    }
+    ship_size = game['ships'][ship_type]['size']
+    __place_ship(match_player['boards']['ships'], ship, line, column, orientation, ship_size)
+
+def is_valid_position(game, player_name, ship_type, line, column, orientation):
     pass
+
+def is_ship_type_available(game, player_name, ship_type):
+    pass
+
+def is_ship_in_position(game, player_name, line, column):
+    pass
+
+def remove_ship(game, player_name, line, column):
+    pass
+
+def all_ships_placed(game):
+    pass    
 
 def has_combat(game):
     pass
@@ -79,21 +100,6 @@ def in_match(game, name):
     pass
 
 def withdraw(game, first, second_name=None):
-    pass
-
-def is_valid_position(game, player_name, ship_type, line, column, orientation):
-    pass
-
-def is_ship_type_available(game, player_name, ship_type):
-    pass
-
-def place_ship(game, player_name, ship_type, line, column, orientation):
-    pass
-
-def is_ship_in_position(game, player_name, line, column):
-    pass
-
-def remove_ship(game, player_name, line, column):
     pass
 
 def is_valid_shot(game, line, column):
@@ -116,6 +122,11 @@ def __get_player(game, name):
         if player['name'] == name:
             return player
 
+def __get_match_player(game, name):
+    for key in game['match']:
+        if game['match'][key]['player']['name'] == name:
+            return game['match'][key]
+    
 def __create_match_player(game, player_name):
     return {
         'player': __get_player(game, player_name),
@@ -127,12 +138,45 @@ def __create_match_player(game, player_name):
             'L': []
         },
         'boards': {
-            'ships': [[0 for _ in range(10)] for _ in range(10)],
-            'shots': [[0 for _ in range(10)] for _ in range(10)]
+            'ships': [[None for _ in range(10)] for _ in range(10)],
+            'shots': [[None for _ in range(10)] for _ in range(10)]
         }
     }
 
+def __get_positions(line, column, orientation, size):
+    result = []
+    line_step = 0
+    column_step = 0
+    if orientation == "N":
+        line_step = -1 
+    elif orientation == "O":
+        column_step = -1
+    elif orientation == "S":
+        line_step = 1
+    elif orientation == "E":
+        column_step = 1
+    for i in range(size):
+        result.append({
+            'line': line + line_step * i,
+            'column': column + column_step * i
+        })
+    return result
+
+def __place_ship(ship_board, ship, line, column, orientation, size):
+    for position in __get_positions(line, column, orientation, size):
+        ship_board[position['line']][position['column']] = ship
+
+def __print_ship_board(ship_board):
+    for l in range(len(ship_board)):
+        for ship in ship_board[l]:
+            print(ship['name'] if ship is not None else ".", " ", end="")
+        print()
+
 if __name__ == "__main__":
     game = new_game()
-    print(__get_num_ships(game))
-    print(__get_ship_names(game))
+
+    add_player(game, "Bob")
+    add_player(game, "Alice")
+    start_match(game, "Bob", "Alice")
+    place_ship(game, "Alice", "P", 2, 2, "E")
+    __print_ship_board(game['match']['second']['boards']['ships'])
