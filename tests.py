@@ -1,7 +1,7 @@
 import unittest
 import battleship_game as bg
 
-class TestStand(unittest.TestCase):
+class TestBattleshipGame(unittest.TestCase):
     def setUp(self):
         self.game = bg.new_game()
 
