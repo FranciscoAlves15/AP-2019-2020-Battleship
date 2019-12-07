@@ -1,7 +1,7 @@
-import controllers as cc
+import battleship_game as bg
 
 def main():
-    game = cc.new_game()
+    game = bg.new_game()
     while True:
         line = input()
         if not line:
@@ -12,43 +12,151 @@ def main():
         elif commands[0] == "EJ":
             commandEJ(commands, game)
         elif commands[0] == "LJ":
-            pass
+            commandLJ(commands, game)
         elif commands[0] == "IL":
-            pass
+            commandIL(commands, game)
         elif commands[0] == "IC":
-            pass
+            commandIC(commands, game)
         elif commands[0] == "D":
-            pass
+            commandD(commands, game)
         elif commands[0] == "CN":
-            pass
+            commandCN(commands, game)
         elif commands[0] == "RN":
-            pass
+            commandRN(commands, game)
         elif commands[0] == "T":
-            pass
+            commandT(commands, game)
         elif commands[0] == "V":
-            pass
+            commandV(commands, game)
         elif commands[0] == "G":
-            pass
+            commandG(commands, game)
         elif commands[0] == "L":
-            pass
+            commandL(commands, game)
 
 def commandRJ(commands, game):
     name = commands[1]
-    if cc.has_player(game, name):
+    if bg.has_player(game, name):
         print("Jogador existente.")
     else:
-        cc.add_player(game, name)
+        bg.add_player(game, name)
         print("Jogador registado com sucesso")
 
 def commandEJ(commands, game):
     name = commands[1]
-    if not cc.has_player(game, name):
-        print("Jogador inexistente.")
-    elif cc.player_in_current_game(game, name):
+    if not bg.has_player(game, name):
+        print("Jogador não existente.")
+    elif bg.in_match(game, name):
         print("Jogador participa no jogo em curso.")
     else:
-        cc.remove_player(game, name)
-        print("Jogador removido com sucesso.")       
+        bg.remove_player(game, name)
+        print("Jogador removido com sucesso.")   
+
+def commandLJ(commands, game):
+    if not bg.has_players(game):
+        print("Não existem jogadores registados.")
+    else:
+        for player in bg.get_players(game):
+            print(f"{player['name']} {player['games_played']} {player['wins']}")
+
+def commandIL(commands, game):
+    player_1_name = commands[1]
+    player_2_name = commands[2]
+    if bg.has_match(game):
+        print("Existe um jogo em curso.")
+    elif (not bg.has_player(game, player_1_name)) or (not bg.has_player(player_2_name)):
+        print("Jogadores não registados.")
+    else:
+        bg.start_match(game, player_1_name, player_2_name)
+        print("Jogo iniciado com sucesso.")
+
+def commandIC(commands, game):
+    if not bg.has_match(game):
+        print("Não existe jogo em curso.")
+    elif not bg.all_ships_placed(game):
+        print("Navios não colocados.")
+    else:
+        if not bg.has_combat(game):
+            bg.start_combat(game)
+        print("Combate iniciado.")
+
+def commandD(commands, game):
+    player_1_name = commands[1]
+    player_2_name = commands[2] if len(commands==3) else None
+    if not bg.has_match(game):
+        print("Não existe jogo em curso.")
+    elif (not bg.in_match(game, player_1_name)) or (not bg.in_match(game, player_2_name)):
+        print("Jogador não participa no jogo em curso.")
+    else:
+        bg.withdraw(game, player_1_name, player_2_name)
+        print("Desistência com sucesso. Jogo terminado.")
+
+def commandCN(commands, game):
+    player_name = commands[1]
+    ship_type = commands[2]
+    line = commands[3]
+    column = commands[4]
+    orientation = commands[5] if len(commands) == 6 else None
+    if not bg.has_match(game):
+        print("Não existe jogo em curso.")
+    elif not bg.in_match(game, player_name):
+        print("Jogador não participa no jogo em curso.")
+    elif not bg.is_valid_position(game, player_name, ship_type, line, column, orientation):
+        print("Posição irregular.")
+    elif not bg.is_ship_type_available(game, player_name, ship_type):
+        print("Não tem mais navios dessa tipologia disponíveis.")
+    else:
+        bg.place_ship(game, player_name, ship_type, line, column, orientation)
+        print("Navio colocado com sucesso.")
+        
+def commandRN(commands, game):
+    player_name = commands[1]
+    line = commands[2]
+    column = commands[3]
+    if not bg.has_match(game):
+        print("Não existe jogo em curso")
+    elif not bg.in_match(game, player_name):
+        print("Jogador não participa no jogo em curso.")
+    elif not bg.is_ship_in_position(game, player_name, line, column):
+        print("Não existe navio na posição.")
+    else:
+        bg.remove_ship(game, player_name, line, column)
+        print("Navio removido com sucesso.")
+
+def commandT(commands, game):
+    player_name = commands[1]
+    line = commands[2]
+    column = commands[3]
+    if not bg.has_match(game):
+        print("Não existe jogo em curso")
+    elif not bg.in_match(game, player_name):
+        print("Jogador não participa no jogo em curso.")
+    elif not bg.is_valid_shot(game, line, column):
+        print("Posição irregular.")
+    else:
+        shot = bg.shot(game, player_name, line, column)
+        if shot['ended']:
+            print(f"Navio {shot['type']} afundado. Jogo terminado.")
+        elif shot['sunk']:
+            print(f"Navio {shot['type']} afundado.")
+        elif shot['where'] == "ship":
+            print("Tiro em navio.")
+        elif shot['where'] == "water":
+            print("Tiro na água.")
+
+def commandV(commands, game):
+    if not bg.has_match(game):
+        print("Não existe jogo em curso.")
+    elif bg.has_combat(game):
+        print("Jogo em curso sem combate iniciado.")
+    else:
+        result = bg.get_current_match_state(game)
+        for e in result:
+            print(f"{e['name']} {e['total_shots']} {e['shots_on_ships']} {e['sunk_ships']}")
+
+def commandG(commands, game):
+    pass
+
+def commandL(commands, game):
+    pass
 
 if __name__ == "__main__":
     main()
