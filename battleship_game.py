@@ -78,6 +78,7 @@ def place_ship(game, player_name, ship_type, board_line, board_column, orientati
     }
     ship_size = __get_ship_size(game, ship_type)
     __place_ship(match_player['boards']['ships'], ship, line, column, orientation, ship_size)
+    match_player['ships'][ship_type].append(ship)
 
 def is_valid_position(game, player_name, ship_type, board_line, board_column, orientation):
     line = __get_line(board_line)
@@ -92,7 +93,8 @@ def is_valid_position(game, player_name, ship_type, board_line, board_column, or
 
 def is_ship_type_available(game, player_name, ship_type):
     max_num_ships = __get_max_ships_of_type(game, ship_type)
-    
+    match_player = __get_match_player(game, player_name)
+    return len(match_player['ships'][ship_type]) < max_num_ships
 
 def is_ship_in_position(game, player_name, line, column):
     pass
@@ -227,6 +229,8 @@ if __name__ == "__main__":
     add_player(game, "Bob")
     add_player(game, "Alice")
     start_match(game, "Bob", "Alice")
+    print(is_ship_type_available(game, 'Alice', 'P'))
     place_ship(game, "Alice", "P", "B", "2", "E")
     # __print_ship_board(game['match']['second']['boards']['ships'])
-    print(is_valid_position(game, "Alice", "C", "C", "2", "E"))
+    # print(is_valid_position(game, "Alice", "C", "C", "2", "E"))
+    print(is_ship_type_available(game, 'Alice', 'P'))
