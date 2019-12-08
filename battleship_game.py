@@ -65,10 +65,11 @@ def has_match(game):
 def start_match(game, player_1_name, player_2_name):
     game['match'] = {
         'first': __create_match_player(game, player_1_name),
-        'second': __create_match_player(game, player_2_name)
+        'second': __create_match_player(game, player_2_name),
+        'combat': False
     }
 
-def place_ship(game, player_name, ship_type, board_line, board_column, orientation):
+def place_ship(game, player_name, ship_type, board_line, board_column, orientation=None):
     match_player = __get_match_player(game, player_name)
     line = __get_line(board_line)
     column = __get_column(board_column)
@@ -96,31 +97,47 @@ def is_ship_type_available(game, player_name, ship_type):
     match_player = __get_match_player(game, player_name)
     return len(match_player['ships'][ship_type]) < max_num_ships
 
-def is_ship_in_position(game, player_name, line, column):
-    pass
+def is_ship_in_position(game, player_name, board_line, board_column):
+    line = __get_line(board_line)
+    column = __get_column(board_column)
+    match_player = __get_match_player(game, player_name)
+    return __get_ship(match_player, line, column) is not None
 
-def remove_ship(game, player_name, line, column):
-    pass
+def remove_ship(game, player_name, board_line, board_column):
+    line = __get_line(board_line)
+    column = __get_column(board_column)
+    match_player = __get_match_player(game, player_name)
+    __remove_ship(match_player, line, column)
 
 def all_ships_placed(game):
-    pass    
+    for match_player in __get_match_players(game):
+        if len([y for x in match_player['ships'].values() for y in x]) < __get_num_ships(game):
+            return False
+    return True
 
 def has_combat(game):
-    pass
+    return game['match']['combat']
 
 def start_combat(game):
-    pass
+    game['match']['combat'] = True
 
 def in_match(game, name):
+    return name in [match_player['player']['name'] for match_player in __get_match_players(game)]
+
+def withdraw(game, name, second_name=None):
+    for match_player in __get_match_players(game):
+        if match_player['player']['name'] == name:
+            match_player['player']['matches'] += 1
+        else:
+            match_player['player']['matches'] += 1
+            if second_name is None:
+                match_player['player']['wins'] += 1
+    game['match'] = None
+
+def is_valid_shot(game, board_line, board_column):
     pass
 
-def withdraw(game, first, second_name=None):
-    pass
-
-def is_valid_shot(game, line, column):
-    pass
-
-def shot(game, player_name, line, column):
+def shot(game, player_name, board_line, board_column):
     pass
 
 def get_match_state(game):
@@ -141,9 +158,9 @@ def __get_player(game, name):
             return player
 
 def __get_match_player(game, name):
-    for key in game['match']:
-        if game['match'][key]['player']['name'] == name:
-            return game['match'][key]
+    for match_player in __get_match_players(game):
+        if match_player['player']['name'] == name:
+            return match_player
 
 def __create_match_player(game, player_name):
     return {
@@ -160,6 +177,9 @@ def __create_match_player(game, player_name):
             'shots': [[None for _ in range(10)] for _ in range(10)]
         }
     }
+
+def __get_match_players(game):
+    return [game['match'][x] for x in ['first', 'second']]
 
 def __get_ships_board(game, player_name):
     match_player = __get_match_player(game, player_name)
@@ -191,11 +211,22 @@ def __place_ship(ship_board, ship, line, column, orientation, size):
     for position in __get_positions(line, column, orientation, size):
         ship_board[position['line']][position['column']] = ship
 
+def __get_ship(match_player, line, column):
+    return match_player['boards']['ships'][line][column]
+
+def __remove_ship(match_player, line, column):
+    ship = __get_ship(match_player, line, column)
+    ship_board = match_player['boards']['ships']
+    for l in range(len(ship_board)):
+        while ship in ship_board[l]:
+            ship_board[l].remove(ship)
+    match_player['ships'][ship['name']].remove(ship)
+
 def __get_line(line):
-    return ord(line.lower()) - ord('a')
+    return int(line)-1
 
 def __get_column(column):
-    return int(column)-1
+    return ord(column.lower()) - ord('a')
 
 def __all_positions_in_board(game, positions):
     width = game['width']
@@ -229,8 +260,30 @@ if __name__ == "__main__":
     add_player(game, "Bob")
     add_player(game, "Alice")
     start_match(game, "Bob", "Alice")
-    print(is_ship_type_available(game, 'Alice', 'P'))
-    place_ship(game, "Alice", "P", "B", "2", "E")
-    # __print_ship_board(game['match']['second']['boards']['ships'])
-    # print(is_valid_position(game, "Alice", "C", "C", "2", "E"))
-    print(is_ship_type_available(game, 'Alice', 'P'))
+
+    # print(all_ships_placed(game))
+    place_ship(game, "Alice", "P", "1", "A", "E")
+    place_ship(game, "Alice", "C", "1", "I", "S")
+    place_ship(game, "Alice", "F", "3", "B", "S")
+    place_ship(game, "Alice", "F", "10", "H", "E")
+    place_ship(game, "Alice", "S", "3", "F", "S")
+    place_ship(game, "Alice", "S", "8", "F", "S")
+    place_ship(game, "Alice", "S", "10", "C", "O")
+    place_ship(game, "Alice", "L", "8", "B")
+    place_ship(game, "Alice", "L", "6", "E")
+    place_ship(game, "Alice", "L", "6", "G")
+    place_ship(game, "Alice", "L", "7", "I")
+
+    place_ship(game, "Bob", "P", "1", "A", "E")
+    place_ship(game, "Bob", "C", "1", "I", "S")
+    place_ship(game, "Bob", "F", "3", "B", "S")
+    place_ship(game, "Bob", "F", "10", "H", "E")
+    place_ship(game, "Bob", "S", "3", "F", "S")
+    place_ship(game, "Bob", "S", "8", "F", "S")
+    place_ship(game, "Bob", "S", "10", "C", "O")
+    place_ship(game, "Bob", "L", "8", "B")
+    place_ship(game, "Bob", "L", "6", "E")
+    place_ship(game, "Bob", "L", "6", "G")
+    place_ship(game, "Bob", "L", "7", "I")
+    print(all_ships_placed(game))
+    print(in_match(game, "Bob"))
