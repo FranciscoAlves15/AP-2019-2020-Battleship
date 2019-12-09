@@ -29,3 +29,4 @@ MANIFEST
 .vscode/settings.json
 .vscode/.ropeproject/objectdb
 .vscode/.ropeproject/config.py
+battleship.game
