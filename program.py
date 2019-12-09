@@ -1,6 +1,7 @@
 import battleship_game as bg
 
 def main():
+    filename = "battleship.game"
     game = bg.new_game()
     while True:
         line = input()
@@ -28,9 +29,9 @@ def main():
         elif commands[0] == "V":
             commandV(commands, game)
         elif commands[0] == "G":
-            commandG(commands, game)
+            commandG(commands, game, filename)
         elif commands[0] == "L":
-            commandL(commands, game)
+            game = commandL(commands, filename)
 
 def commandRJ(commands, game):
     name = commands[1]
@@ -134,12 +135,12 @@ def commandT(commands, game):
     else:
         shot = bg.shot(game, player_name, line, column)
         if shot['ended']:
-            print(f"Navio {shot['type']} afundado. Jogo terminado.")
+            print(f"Navio {shot['ship']['name']} afundado. Jogo terminado.")
         elif shot['sunk']:
-            print(f"Navio {shot['type']} afundado.")
-        elif shot['where'] == "ship":
+            print(f"Navio {shot['ship']['name']} afundado.")
+        elif shot['ship'] is not None:
             print("Tiro em navio.")
-        elif shot['where'] == "water":
+        else:
             print("Tiro na água.")
 
 def commandV(commands, game):
@@ -152,11 +153,19 @@ def commandV(commands, game):
         for e in result:
             print(f"{e['name']} {e['total_shots']} {e['shots_on_ships']} {e['sunk_ships']}")
 
-def commandG(commands, game):
-    pass
+def commandG(commands, game, filename):
+    try:
+        bg.save(game, filename)
+        print("Jogo gravado.")
+    except Exception as e:
+        print("Ocorreu um erro na gravação.")
 
-def commandL(commands, game):
-    pass
+def commandL(commands, filename):
+    try:
+        game = bg.load(filename)
+        print("Jogo carregado.")
+    except Exception as e:
+        print("Ocorreu um erro no carregamento.")
 
 if __name__ == "__main__":
     main()

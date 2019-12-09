@@ -1,3 +1,5 @@
+import pickle
+
 def new_game():
     return {
         'ships': {
@@ -57,7 +59,7 @@ def has_players(game):
     return len(game['players']) != 0
 
 def get_players(game):
-    return game['players']
+    return __sort(game['players'], ['name'])
 
 def has_match(game):
     return game['match'] is not None
@@ -75,6 +77,7 @@ def place_ship(game, player_name, ship_type, board_line, board_column, orientati
     column = __get_column(board_column)
     ship = {
         'name': ship_type,
+        'hits': [],
         'is_alive': True
     }
     ship_size = __get_ship_size(game, ship_type)
@@ -135,13 +138,60 @@ def withdraw(game, name, second_name=None):
     game['match'] = None
 
 def is_valid_shot(game, board_line, board_column):
-    pass
+    line = __get_line(board_line)
+    column = __get_column(board_column)
+    return __in_board(game, line, column)
 
 def shot(game, player_name, board_line, board_column):
-    pass
+    result = {
+        'ended': False,
+        'sunk': False,
+        'ship': None
+    }
+    line = __get_line(board_line)
+    column = __get_column(board_column)
+    match_player = __get_match_player(game, player_name)
+    shots_board = match_player['boards']['shots']
+    other_match_player = __get_other_match_player(game, player_name)
+    ship = __shoot(other_match_player, shots_board, line, column)
+    match_player['shots']['all'].append([line, column])
+    if ship is not None:
+        match_player['shots']['on_ships'].append({
+            'ship': ship,
+            'shot': [line, column]
+        })
+        result['ship'] = ship
+        if not ship['is_alive']:
+            result['sunk'] = True
+            match_player['shots']['sunk_ships'].append(ship)
+        ship_list = [ship for ships in other_match_player['ships'].values() for ship in ships]
+        result['ended'] = not any([ship for ship in ship_list if ship['is_alive']])
+    return result
 
 def get_match_state(game):
-    pass
+    result = []
+    for match_player in __get_match_players(game):
+        name = match_player['player']['name']
+        total_shots = len(match_player['shots']['all'])
+        shots_on_ships = len(match_player['shots']['on_ships'])
+        sunk_ships = len(match_player['shots']['sunk_ships'])
+        result.append({
+            'name': name,
+            'total_shots': total_shots,
+            'shots_on_ships': shots_on_ships,
+            'sunk_ships': sunk_ships
+        })
+    return result
+
+def save(game, filename):
+    with open(filename, "wb") as f:
+        pickle.dump(game, f)
+
+def load(filename):
+    game = None
+    with open(filename, "rb") as f:
+        game = pickle.load(f)
+    return game
 
 def __get_num_ships(game):
     return sum([ship['quantity'] for ship in game['ships'].values()])
@@ -157,11 +207,6 @@ def __get_player(game, name):
         if player['name'] == name:
             return player
 
-def __get_match_player(game, name):
-    for match_player in __get_match_players(game):
-        if match_player['player']['name'] == name:
-            return match_player
-
 def __create_match_player(game, player_name):
     return {
         'player': __get_player(game, player_name),
@@ -172,18 +217,42 @@ def __create_match_player(game, player_name):
             'S': [],
             'L': []
         },
+        'shots': {
+            'all': [],
+            'on_ships': [],
+            'sunk_ships': []
+        },
         'boards': {
             'ships': [[None for _ in range(10)] for _ in range(10)],
             'shots': [[None for _ in range(10)] for _ in range(10)]
         }
     }
 
+def __get_match_player(game, name):
+    for match_player in __get_match_players(game):
+        if match_player['player']['name'] == name:
+            return match_player
+
+def __get_other_match_player(game, name):
+    for match_player in __get_match_players(game):
+        if match_player['player']['name'] != name:
+            return match_player
+
 def __get_match_players(game):
-    return [game['match'][x] for x in ['first', 'second']]
+    return __sort([game['match'][x] for x in ['first', 'second']], ['player','name'])
 
 def __get_ships_board(game, player_name):
     match_player = __get_match_player(game, player_name)
     return match_player['boards']['ships']
+
+def __shoot(match_player, shots_board, line, column):
+    ship = match_player['boards']['ships'][line][column]
+    if ship is not None:
+        if [line,column] not in ship['hits']:
+            ship['hits'].append([line,column])
+        if len(ship['hits']) == __get_ship_size(game, ship['name']):
+            ship['is_alive'] = False
+    return ship
 
 def __get_ship_size(game, ship_type):
     return game['ships'][ship_type]['size']
@@ -228,13 +297,13 @@ def __get_line(line):
 def __get_column(column):
     return ord(column.lower()) - ord('a')
 
-def __all_positions_in_board(game, positions):
+def __in_board(game, line, column):
     width = game['width']
     height = game['height']
-    return not any([x for x in positions if x['line'] < 0
-                        or x['column'] < 0
-                        or x['line'] > height
-                        or x['column'] > width ])
+    return line > 0 and column > 0 and line < height and column < width
+
+def __all_positions_in_board(game, positions):
+    return not any([x for x in positions if not __in_board(game, x['line'], x['column'])])
 
 def __has_colisions(board, positions):
     ships = []
@@ -253,6 +322,21 @@ def __print_ship_board(ship_board):
         for ship in ship_board[l]:
             print(f"{ship['name']}" if ship is not None else ".", " ", end="")
         print()
+
+def __sort(dict_list, sort_key, data_type=str):
+    for i in range(len(dict_list)):
+        for j in range(len(dict_list)-i-1):
+            if __get_dict_value(dict_list[j], sort_key) > __get_dict_value(dict_list[j+1], sort_key):
+                tmp = dict_list[j]
+                dict_list[j] = dict_list[j+1]
+                dict_list[j+1] = tmp
+    return dict_list
+
+def __get_dict_value(dict, sub_key_list):
+    value = dict
+    for key in sub_key_list:
+        value = value[key]
+    return value
 
 if __name__ == "__main__":
     game = new_game()
@@ -287,3 +371,13 @@ if __name__ == "__main__":
     place_ship(game, "Bob", "L", "7", "I")
     print(all_ships_placed(game))
     print(in_match(game, "Bob"))
+    print(is_valid_shot(game, "20" , "B"))
+    shot(game, "Alice", "1", "A")
+    shot(game, "Alice", "1", "B")
+    shot(game, "Alice", "1", "C")
+    shot(game, "Alice", "1", "D")
+    shot(game, "Alice", "1", "D")
+    r = shot(game, "Alice", "1", "E")
+    print(get_match_state(game))
+
+    mp = __get_match_players(game)
