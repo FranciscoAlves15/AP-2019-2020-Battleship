@@ -153,20 +153,37 @@ def shot(game, player_name, board_line, board_column):
     match_player = __get_match_player(game, player_name)
     shots_board = match_player['boards']['shots']
     other_match_player = __get_other_match_player(game, player_name)
-    ship = __shoot(other_match_player, shots_board, line, column)
+    ship = __shoot(game, other_match_player, shots_board, line, column)
     match_player['shots']['all'].append([line, column])
     if ship is not None:
         match_player['shots']['on_ships'].append({
             'ship': ship,
             'shot': [line, column]
         })
+        shots_board[line][column] = ship
         result['ship'] = ship
         if not ship['is_alive']:
             result['sunk'] = True
             match_player['shots']['sunk_ships'].append(ship)
         ship_list = [ship for ships in other_match_player['ships'].values() for ship in ships]
         result['ended'] = not any([ship for ship in ship_list if ship['is_alive']])
+    else: # hits water
+        shots_board[line][column] = {
+            'name': 'W'
+        }
+    __update_state(game)
     return result
+
+def __update_state(game):
+    for match_player in __get_match_players(game):
+        if len(match_player['shots']['sunk_ships']) == __get_num_ships(game):
+            match_player['player']['matches'] += 1
+            match_player['player']['wins'] += 1
+            other_player = __get_other_match_player(game, match_player['player']['name'])
+            other_player['player']['matches'] += 1
+            game['match'] = None
+            break
+
 
 def get_match_state(game):
     result = []
@@ -245,7 +262,7 @@ def __get_ships_board(game, player_name):
     match_player = __get_match_player(game, player_name)
     return match_player['boards']['ships']
 
-def __shoot(match_player, shots_board, line, column):
+def __shoot(game, match_player, shots_board, line, column):
     ship = match_player['boards']['ships'][line][column]
     if ship is not None:
         if [line,column] not in ship['hits']:
@@ -300,28 +317,51 @@ def __get_column(column):
 def __in_board(game, line, column):
     width = game['width']
     height = game['height']
-    return line > 0 and column > 0 and line < height and column < width
+    return line >= 0 and column >= 0 and line < height and column < width
 
 def __all_positions_in_board(game, positions):
     return not any([x for x in positions if not __in_board(game, x['line'], x['column'])])
 
 def __has_colisions(board, positions):
     ships = []
+    height = len(board) -1
+    width = len(board[0]) -1
     for position in positions:
         line = position['line']
         column = position['column']
         ships.append(board[line][column])
-        ships.append(board[max([0,line+1])][column])
-        ships.append(board[max([0,line-1])][column])
-        ships.append(board[line][max([0,column+1])])
-        ships.append(board[line][max([0,column-1])])
-    return any([x for x in ships if x is not None])
+        ships.append(board[min([max([0,line+1]), width])][column])
+        ships.append(board[min([max([0,line-1]), width])][column])
+        ships.append(board[line][min([max([0,column+1]), height])])
+        ships.append(board[line][min([max([0,column-1]), height])])
+    return any([ship for ship in ships if ship is not None])
 
 def __print_ship_board(ship_board):
     for l in range(len(ship_board)):
         for ship in ship_board[l]:
             print(f"{ship['name']}" if ship is not None else ".", " ", end="")
         print()
+
+def print_ships(game):
+    __print_board(game, 'ships')
+
+def print_shots(game):
+    __print_board(game, 'shots')
+
+def __print_board(game, board_name):
+    height = game['height']
+    width = game['width']
+    match_players = __get_match_players(game)
+    print("\t","\t\t\t".join([player['player']['name'] for player in match_players]))
+    print("    A B C D E F G H I J  A B C D E F G H I J")
+    for l in range(height):
+        line = f"{' ' if l+1 < 10 else ''}{l+1} "
+        for match_player in match_players:
+            board = match_player['boards'][board_name]
+            for ship in board[l]:
+                line = f"{line} {ship['name'] if ship is not None else '.'}"
+            line = f"{line}\t"
+        print(line)
 
 def __sort(dict_list, sort_key, data_type=str):
     for i in range(len(dict_list)):
@@ -345,39 +385,41 @@ if __name__ == "__main__":
     add_player(game, "Alice")
     start_match(game, "Bob", "Alice")
 
-    # print(all_ships_placed(game))
-    place_ship(game, "Alice", "P", "1", "A", "E")
-    place_ship(game, "Alice", "C", "1", "I", "S")
-    place_ship(game, "Alice", "F", "3", "B", "S")
+    # place_ship(game, "Alice", "P", "1", "A", "E")
+    # place_ship(game, "Alice", "C", "1", "I", "S")
+    # place_ship(game, "Alice", "F", "3", "B", "S")
     place_ship(game, "Alice", "F", "10", "H", "E")
-    place_ship(game, "Alice", "S", "3", "F", "S")
-    place_ship(game, "Alice", "S", "8", "F", "S")
-    place_ship(game, "Alice", "S", "10", "C", "O")
-    place_ship(game, "Alice", "L", "8", "B")
-    place_ship(game, "Alice", "L", "6", "E")
-    place_ship(game, "Alice", "L", "6", "G")
-    place_ship(game, "Alice", "L", "7", "I")
+    # place_ship(game, "Alice", "S", "3", "F", "S")
+    # place_ship(game, "Alice", "S", "8", "F", "S")
+    # place_ship(game, "Alice", "S", "10", "C", "O")
+    # place_ship(game, "Alice", "L", "8", "B")
+    # place_ship(game, "Alice", "L", "6", "E")
+    # place_ship(game, "Alice", "L", "6", "G")
+    # place_ship(game, "Alice", "L", "7", "I")
+    __print_ship_board(__get_ships_board(game, "Alice"))
 
-    place_ship(game, "Bob", "P", "1", "A", "E")
-    place_ship(game, "Bob", "C", "1", "I", "S")
-    place_ship(game, "Bob", "F", "3", "B", "S")
-    place_ship(game, "Bob", "F", "10", "H", "E")
-    place_ship(game, "Bob", "S", "3", "F", "S")
-    place_ship(game, "Bob", "S", "8", "F", "S")
-    place_ship(game, "Bob", "S", "10", "C", "O")
-    place_ship(game, "Bob", "L", "8", "B")
-    place_ship(game, "Bob", "L", "6", "E")
-    place_ship(game, "Bob", "L", "6", "G")
-    place_ship(game, "Bob", "L", "7", "I")
-    print(all_ships_placed(game))
-    print(in_match(game, "Bob"))
-    print(is_valid_shot(game, "20" , "B"))
-    shot(game, "Alice", "1", "A")
-    shot(game, "Alice", "1", "B")
-    shot(game, "Alice", "1", "C")
-    shot(game, "Alice", "1", "D")
-    shot(game, "Alice", "1", "D")
-    r = shot(game, "Alice", "1", "E")
-    print(get_match_state(game))
+    # place_ship(game, "Bob", "P", "1", "A", "E")
+    # place_ship(game, "Bob", "C", "1", "I", "S")
+    # place_ship(game, "Bob", "F", "3", "B", "S")
+    # place_ship(game, "Bob", "F", "10", "H", "E")
+    # place_ship(game, "Bob", "S", "3", "F", "S")
+    # place_ship(game, "Bob", "S", "8", "F", "S")
+    # place_ship(game, "Bob", "S", "10", "C", "O")
+    # place_ship(game, "Bob", "L", "8", "B")
+    # place_ship(game, "Bob", "L", "6", "E")
+    # place_ship(game, "Bob", "L", "6", "G")
+    # place_ship(game, "Bob", "L", "7", "I")
+    # print(all_ships_placed(game))
+    # print(in_match(game, "Bob"))
+    # print(is_valid_shot(game, "20" , "B"))
+    # shot(game, "Alice", "1", "A")
+    # shot(game, "Alice", "1", "B")
+    # shot(game, "Alice", "1", "C")
+    # shot(game, "Alice", "1", "D")
+    # shot(game, "Alice", "1", "D")
+    # r = shot(game, "Alice", "1", "E")
+    # print(get_match_state(game))
 
-    mp = __get_match_players(game)
+    # save(game, "battleship.game")
+    # game = load("battleship.game")
+    # print(get_match_state(game))

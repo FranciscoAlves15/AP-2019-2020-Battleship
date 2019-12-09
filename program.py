@@ -14,8 +14,8 @@ def main():
             commandEJ(commands, game)
         elif commands[0] == "LJ":
             commandLJ(commands, game)
-        elif commands[0] == "IL":
-            commandIL(commands, game)
+        elif commands[0] == "IJ":
+            commandIJ(commands, game)
         elif commands[0] == "IC":
             commandIC(commands, game)
         elif commands[0] == "D":
@@ -32,6 +32,13 @@ def main():
             commandG(commands, game, filename)
         elif commands[0] == "L":
             game = commandL(commands, filename)
+        # Extra commands
+        elif commands[0] == "PN":
+            commandPN(commands, game)
+        elif commands[0] == "PT":
+            commandPT(commands, game)
+        else:
+            print("Instrução inválida.")
 
 def commandRJ(commands, game):
     name = commands[1]
@@ -58,12 +65,12 @@ def commandLJ(commands, game):
         for player in bg.get_players(game):
             print(f"{player['name']} {player['matches']} {player['wins']}")
 
-def commandIL(commands, game):
+def commandIJ(commands, game):
     player_1_name = commands[1]
     player_2_name = commands[2]
     if bg.has_match(game):
         print("Existe um jogo em curso.")
-    elif (not bg.has_player(game, player_1_name)) or (not bg.has_player(player_2_name)):
+    elif (not bg.has_player(game, player_1_name)) or (not bg.has_player(game, player_2_name)):
         print("Jogadores não registados.")
     else:
         bg.start_match(game, player_1_name, player_2_name)
@@ -146,7 +153,7 @@ def commandT(commands, game):
 def commandV(commands, game):
     if not bg.has_match(game):
         print("Não existe jogo em curso.")
-    elif bg.has_combat(game):
+    elif not bg.has_combat(game):
         print("Jogo em curso sem combate iniciado.")
     else:
         result = bg.get_match_state(game)
@@ -166,6 +173,12 @@ def commandL(commands, filename):
         print("Jogo carregado.")
     except Exception as e:
         print("Ocorreu um erro no carregamento.")
+
+def commandPN(commands, game):
+    bg.print_ships(game)
+
+def commandPT(commands, game):
+    bg.print_shots(game)
 
 if __name__ == "__main__":
     main()
