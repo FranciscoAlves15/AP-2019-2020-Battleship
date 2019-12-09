@@ -174,17 +174,6 @@ def shot(game, player_name, board_line, board_column):
     __update_state(game)
     return result
 
-def __update_state(game):
-    for match_player in __get_match_players(game):
-        if len(match_player['shots']['sunk_ships']) == __get_num_ships(game):
-            match_player['player']['matches'] += 1
-            match_player['player']['wins'] += 1
-            other_player = __get_other_match_player(game, match_player['player']['name'])
-            other_player['player']['matches'] += 1
-            game['match'] = None
-            break
-
-
 def get_match_state(game):
     result = []
     for match_player in __get_match_players(game):
@@ -256,7 +245,10 @@ def __get_other_match_player(game, name):
             return match_player
 
 def __get_match_players(game):
-    return __sort([game['match'][x] for x in ['first', 'second']], ['player','name'])
+    if game['match'] is not None:
+        return __sort([game['match'][x] for x in ['first', 'second']], ['player','name'])
+    else:
+         return []
 
 def __get_ships_board(game, player_name):
     match_player = __get_match_player(game, player_name)
@@ -304,8 +296,9 @@ def __remove_ship(match_player, line, column):
     ship = __get_ship(match_player, line, column)
     ship_board = match_player['boards']['ships']
     for l in range(len(ship_board)):
-        while ship in ship_board[l]:
-            ship_board[l].remove(ship)
+        for c in range(len(ship_board[l])):
+            if ship_board[l][c] == ship:
+                ship_board[l][c] = None
     match_player['ships'][ship['name']].remove(ship)
 
 def __get_line(line):
@@ -334,19 +327,33 @@ def __has_colisions(board, positions):
         ships.append(board[min([max([0,line-1]), width])][column])
         ships.append(board[line][min([max([0,column+1]), height])])
         ships.append(board[line][min([max([0,column-1]), height])])
+        ships.append(board[min([max([0,line-1]), width])][min([max([0,column-1]), height])])
+        ships.append(board[min([max([0,line-1]), width])][min([max([0,column+1]), height])])
+        ships.append(board[min([max([0,line+1]), width])][min([max([0,column-1]), height])])
+        ships.append(board[min([max([0,line+1]), width])][min([max([0,column+1]), height])])
     return any([ship for ship in ships if ship is not None])
 
-def __print_ship_board(ship_board):
-    for l in range(len(ship_board)):
-        for ship in ship_board[l]:
-            print(f"{ship['name']}" if ship is not None else ".", " ", end="")
-        print()
+def __update_state(game):
+    for match_player in __get_match_players(game):
+        if len(match_player['shots']['sunk_ships']) == __get_num_ships(game):
+            match_player['player']['matches'] += 1
+            match_player['player']['wins'] += 1
+            other_player = __get_other_match_player(game, match_player['player']['name'])
+            other_player['player']['matches'] += 1
+            game['match'] = None
+            break
 
 def print_ships(game):
     __print_board(game, 'ships')
 
 def print_shots(game):
     __print_board(game, 'shots')
+
+def __print_ship_board(ship_board):
+    for l in range(len(ship_board)):
+        for ship in ship_board[l]:
+            print(f"{ship['name']}" if ship is not None else ".", " ", end="")
+        print()
 
 def __print_board(game, board_name):
     height = game['height']

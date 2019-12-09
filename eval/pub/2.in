@@ -1,0 +1,83 @@
+RJ Bob
+RJ Alice
+RJ James
+LJ
+IJ Bob Alice
+CN Alice P 2 A E
+CN Alice C 1 H S
+CN Alice F 4 B S
+CN Alice F 10 H E
+CN Alice S 4 F S
+CN Alice S 7 F S
+CN Alice S 10 C E
+CN Alice L 8 B
+CN Alice L 7 D
+CN Alice L 7 H
+CN Alice L 7 J
+CN Bob P 1 A E
+CN Bob C 1 I S
+CN Bob F 3 B S
+CN Bob F 10 H O
+CN Bob S 3 F S
+CN Bob S 9 J S
+CN Bob S 10 C E
+CN Bob L 8 B
+CN Bob L 6 E
+CN Bob L 6 G
+CN Bob L 7 I
+T Bob 5 F
+T James 5 F
+IC
+T James 5 F
+T Alice 1 A
+T Bob 2 B
+T Alice 1 B
+T Bob 4 F
+T Alice 1 C
+T Bob 5 I
+T Alice 1 D
+T Bob 10 B
+T Alice 1 E
+T Bob 3 H
+T Alice 3 B
+T Bob 6 E
+T Alice 4 B
+T Bob 3 H
+T Alice 5 B
+T Bob 8 F
+T Alice 8 B
+T Bob 10 F
+T Alice 10 C
+T Bob 3 F
+T Alice 10 D
+T Bob 1 I
+T Alice 3 F
+T Bob 2 B
+T Alice 4 F
+T Bob 6 G
+T Alice 6 E
+T Bob 9 A
+T Alice 6 G
+T Bob 4 J
+T Alice 7 I
+T Bob 2 J
+T Alice 2 I
+T Bob 1 A
+T Alice 3 I
+T Bob 6 B
+T Alice 4 I
+T Bob 3 C
+T Alice 1 I
+T Bob 2 D
+T Alice 10 H
+T Bob 6 A
+T Alice 9 J
+T Bob 10 F
+T Alice 10 J
+T Bob 10 A
+T Alice 10 F
+T Bob 1 A
+T Alice 10 G
+LJ
+G
+

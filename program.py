@@ -88,7 +88,7 @@ def commandIC(commands, game):
 
 def commandD(commands, game):
     player_1_name = commands[1]
-    player_2_name = commands[2] if len(commands==3) else None
+    player_2_name = commands[2] if len(commands)==3 else None
     if not bg.has_match(game):
         print("Não existe jogo em curso.")
     elif (not bg.in_match(game, player_1_name)) or (not bg.in_match(game, player_2_name)):
@@ -134,7 +134,9 @@ def commandT(commands, game):
     line = commands[2]
     column = commands[3]
     if not bg.has_match(game):
-        print("Não existe jogo em curso")
+        print("Não existe jogo em curso.")
+    elif not bg.has_combat(game):
+        print("Jogo em curso sem combate iniciado.")
     elif not bg.in_match(game, player_name):
         print("Jogador não participa no jogo em curso.")
     elif not bg.is_valid_shot(game, line, column):
@@ -171,6 +173,7 @@ def commandL(commands, filename):
     try:
         game = bg.load(filename)
         print("Jogo carregado.")
+        return game
     except Exception as e:
         print("Ocorreu um erro no carregamento.")
 
