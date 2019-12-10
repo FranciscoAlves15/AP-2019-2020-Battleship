@@ -46,7 +46,7 @@ def commandRJ(commands, game):
         print("Jogador existente.")
     else:
         bg.add_player(game, name)
-        print("Jogador registado com sucesso")
+        print("Jogador registado com sucesso.")
 
 def commandEJ(commands, game):
     name = commands[1]
@@ -74,7 +74,8 @@ def commandIJ(commands, game):
         print("Jogadores não registados.")
     else:
         bg.start_match(game, player_1_name, player_2_name)
-        print("Jogo iniciado com sucesso.")
+        names = bg.__sort([{'name':player_1_name}, {'name':player_2_name}],['name'])
+        print(f"Jogo iniciado entre {names[0]['name']} e {names[1]['name']}.")
 
 def commandIC(commands, game):
     if not bg.has_match(game):
@@ -120,7 +121,7 @@ def commandRN(commands, game):
     line = commands[2]
     column = commands[3]
     if not bg.has_match(game):
-        print("Não existe jogo em curso")
+        print("Não existe jogo em curso.")
     elif not bg.in_match(game, player_name):
         print("Jogador não participa no jogo em curso.")
     elif not bg.is_ship_in_position(game, player_name, line, column):

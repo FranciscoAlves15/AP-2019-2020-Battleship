@@ -3,12 +3,12 @@ Jogo carregado.
 Alice 1 1
 Bob 1 0
 James 0 0
-Jogador registado com sucesso
+Jogador registado com sucesso.
 Alice 1 1
 Bob 1 0
 James 0 0
 Trudy 0 0
-Jogo iniciado com sucesso.
+Jogo iniciado entre Bob e Trudy.
 Instrução inválida.
 Jogo em curso sem combate iniciado.
 Desistência com sucesso. Jogo terminado.
@@ -21,9 +21,9 @@ Jogador removido com sucesso.
 Alice 1 1
 James 0 0
 Trudy 1 0
-Jogador registado com sucesso
-Não existe jogo em curso
-Jogo iniciado com sucesso.
+Jogador registado com sucesso.
+Não existe jogo em curso.
+Jogo iniciado entre Bob e Trudy.
 Navio colocado com sucesso.
 Navio removido com sucesso.
 Navio colocado com sucesso.
