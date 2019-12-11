@@ -1,0 +1,16 @@
+RJ Bob
+RJ Alice
+LJ
+IJ Bob Alice
+IJ Bob Alice
+CN Alice P 2 A E
+CN Alice C 1 H S
+CN Bob L 9 J
+CN Bob L 7 I
+T Bob A 5
+D Bob
+LJ
+IJ Bob Alice
+D Alice Bob
+LJ
+

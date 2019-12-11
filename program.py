@@ -92,7 +92,7 @@ def commandD(commands, game):
     player_2_name = commands[2] if len(commands)==3 else None
     if not bg.has_match(game):
         print("Não existe jogo em curso.")
-    elif (not bg.in_match(game, player_1_name)) or (not bg.in_match(game, player_2_name)):
+    elif (not bg.in_match(game, player_1_name)) or ((not bg.in_match(game, player_2_name)) and player_2_name is not None):
         print("Jogador não participa no jogo em curso.")
     else:
         bg.withdraw(game, player_1_name, player_2_name)
