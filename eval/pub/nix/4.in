@@ -1,0 +1,127 @@
+LJ
+RJ Mario
+RJ Ana
+RJ Rui
+LJ
+IJ Rui Ana
+D Ana Rui
+LJ
+IJ Rui Mario
+D Pedro
+D Mario
+LJ
+IJ Mario Ana
+RN Mario 1 A
+EJ Mario
+CN Mario P 1 C O
+CN Mario P 4 B S
+CN Mario C 4 C E
+CN Mario C 4 F S
+CN Mario F 10 C O
+CN Mario F 2 A E
+CN Mario P 1 E E
+RN Mario 6 B
+CN Mario P 4 B S
+CN Mario S 4 J N
+CN Mario S 6 J S
+CN Mario S 2 F N
+CN Mario L 4 D N
+CN Mario L 4 H
+CN Mario L 7 D
+CN Mario L 7 H
+IC
+CN Ana P 12 L E
+CN Ana P 1 E O
+CN Ana C 4 C S
+CN Ana F 4 H E
+CN Ana F 6 J O
+CN Ana S 8 I E
+CN Ana S 8 G O
+CN Ana S 10 C N
+CN Ana L 3 J
+CN Ana L 1 J
+CN Ana L 10 J
+CN Ana L 10 A
+CN Ana L 10 H
+CN Ana L 10 D
+RN Ana 10 H
+IC
+CN Ana L 10 H
+T Ana 1 A
+IC
+T Mario 12 L
+T Ana 1 A
+T Rui 2 B
+T Mario 1 A
+T Ana 1 J
+T Mario 1 E
+T Ana 4 H
+T Mario 1 C
+T Ana 10 J
+T Mario 1 B
+T Ana 10 I
+T Mario 1 C
+T Ana 9 J
+T Mario 1 D
+T Ana 8 B
+T Mario 1 A
+V
+T Ana 4 B
+T Mario 1 J
+T Ana 5 A
+T Mario 4 I
+T Ana 5 B
+T Mario 4 J
+T Ana 5 D
+T Mario 4 H
+T Ana 2 G
+T Mario 10 A
+T Ana 2 H
+T Mario 10 H
+T Ana 4 B
+T Mario 1 J
+T Ana 4 C
+T Mario 6 C
+T Ana 5 E
+T Mario 7 C
+T Ana 3 F
+T Mario 4 C
+T Ana 3 C
+T Mario 5 C
+V
+T Ana 5 F
+T Mario 8 G
+T Ana 5 J
+T Mario 8 J
+T Ana 3 B
+T Mario 9 C
+T Ana 7 F
+T Mario 8 F
+T Ana 7 E
+T Mario 8 I
+T Ana 2 A
+T Mario 10 C
+T Ana 2 C
+T Mario 6 I
+T Ana 7 D
+T Mario 6 H
+T Ana 9 D
+T Mario 8 J
+T Ana 6 G
+T Mario 10 J
+V
+G
+T Ana 3 F
+T Mario 6 J
+T Ana 6 C
+RJ Pedro
+LJ
+L
+LJ
+V
+T Ana 3 J
+D Mario
+LJ
+EJ Pedro
+
+
