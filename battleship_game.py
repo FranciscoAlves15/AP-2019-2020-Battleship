@@ -164,7 +164,8 @@ def shot(game, player_name, board_line, board_column):
         result['ship'] = ship
         if not ship['is_alive']:
             result['sunk'] = True
-            match_player['shots']['sunk_ships'].append(ship)
+            if ship not in match_player['shots']['sunk_ships']:
+                match_player['shots']['sunk_ships'].append(ship)
         ship_list = [ship for ships in other_match_player['ships'].values() for ship in ships]
         result['ended'] = not any([ship for ship in ship_list if ship['is_alive']])
     else: # hits water
